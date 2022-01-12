@@ -8,7 +8,7 @@ public class text : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        textt = false;
+        textt = true;
     }
 
     // Update is called once per frame
