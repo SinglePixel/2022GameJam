@@ -51,7 +51,7 @@ public class PlayerMove : MonoBehaviour
                 ReadyToDash();
             }
         }
-
+        
     }
 
     private void FixedUpdate()
@@ -63,23 +63,28 @@ public class PlayerMove : MonoBehaviour
 
         GroundMovement();
         Jump();
+        SwitchAnim();//控制动画
     }
 
     void GroundMovement()
     {
-        horizontalMove = Input.GetAxisRaw("Horizontal");//只返回-1，0，1
+        if (Objectpool.instance.isFinish)
+        {
+       horizontalMove = Input.GetAxisRaw("Horizontal");//只返回-1，0，1
         rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y);
 
         if (horizontalMove != 0)
         {
             transform.localScale = new Vector3(horizontalMove, 1, 1);
         }
+        }
+ 
 
     }
 
     void Jump()//跳跃
     {
-        if (isGround)
+        if (isGround && Objectpool.instance.isFinish)
         {
             jumpCount = 2;//可跳跃数量
             isJump = false;
@@ -112,7 +117,7 @@ public class PlayerMove : MonoBehaviour
 
     void Dash()//冲刺方法
     {
-        if (isDashing)
+        if (isDashing&&Objectpool.instance.isFinish)
         {
             if (dashTimeLeft > 0)
             {
@@ -134,5 +139,23 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
+    }
+    void SwitchAnim()//动画切换
+    {
+        anim.SetFloat("running", Mathf.Abs(rb.velocity.x));
+
+       // if (isGround)
+      //  {
+           // anim.SetBool("falling", false);
+        //}
+        //else if (!isGround && rb.velocity.y > 0)
+       // {
+        //    anim.SetBool("jumping", true);
+        //}
+       // else if (rb.velocity.y < 0)
+        //{
+          //  anim.SetBool("jumping", false);
+          //  anim.SetBool("falling", true);
+       // }
     }
 }

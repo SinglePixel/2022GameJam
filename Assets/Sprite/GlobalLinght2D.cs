@@ -9,7 +9,7 @@ public class GlobalLinght2D : MonoBehaviour
     public bool isSun=true;//是否执行交替
     public float WhiteSeep;//白天到晚上的速度
     public float BlackSeep;//晚上到白天的速度
-    public float BrightGameTime = 120;//游戏有日光的时间
+    public float SanGameTime = 120;//游戏有日光的时间
     
 
 
@@ -23,12 +23,12 @@ public class GlobalLinght2D : MonoBehaviour
     void FixedUpdate()
     {
         
-        if (BrightGameTime<=0)//结束代码
+        if (SanGameTime <= 0)//结束代码
         {
             San.intensity *= 0.9f;
             return;
         }
-        BrightGameTime -= Time.deltaTime;
+        SanGameTime -= Time.deltaTime;
 
         if (isSun)
         {

@@ -10,6 +10,9 @@ public GameObject shandowPrefab;//获取残影预制体
 
 public int shandowCount;//对象池中生成数量
 
+public float BrightGameTime = 120;//游戏有日光的时间
+public bool isFinish =true;
+
 private Queue<GameObject> availableObjects = new Queue<GameObject>();//获取新建队列(残影)
 
 void Awake()
@@ -19,6 +22,15 @@ void Awake()
     FillPool();
 
 }
+void FixedUpdate()
+    {
+        if (BrightGameTime<=0)
+        {
+            isFinish = false;
+            return;
+        }
+        BrightGameTime -= Time.deltaTime;
+    }
 
 public void FillPool()//初始化对象池的方法
 {
@@ -48,5 +60,5 @@ public GameObject GetFormPool()//残影这边拿一个对象
     outShadow.SetActive(true);
     return outShadow;
 }
-    //子弹对象池
+    //结束代码
 }
