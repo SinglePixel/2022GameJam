@@ -10,8 +10,10 @@ public GameObject shandowPrefab;//获取残影预制体
 
 public int shandowCount;//对象池中生成数量
 
-public float BrightGameTime = 120;//游戏有日光的时间
-public bool isFinish =true;
+public float BrightGameTime;//游戏有日光的时间
+
+public bool isFinish =true;//判定游戏结束
+    public bool issli = false;//判定游戏胜利
 
 private Queue<GameObject> availableObjects = new Queue<GameObject>();//获取新建队列(残影)
 

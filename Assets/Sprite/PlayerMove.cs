@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -13,20 +14,34 @@ public class PlayerMove : MonoBehaviour
     private float horizontalMove;//获取键盘参数
     public Transform groundCheck;
     public Transform debuffCheck;
+    public Transform buffCheck;
+    public Transform xieshenCheck;
     public LayerMask ground;//检测（地面）图层
     public LayerMask debuff;//检测（负面效果平台）
-    GameObject bottomLine;//检测死亡的物品
-    public Transform BirthPoint;
+    public LayerMask buff;//检测（负面效果平台）
+    public LayerMask xieshneg;//检测邪神
+    GameObject bottomLine;//检测返回出生点的位置
+    public Transform BirthPoint;//出生点位置记录
+    public Transform BirthPoint1;
+    public Transform BirthPoint2;
+    public Transform BirthPoint3;
+    private bool Stage=true;//记录玩家到出生复活存档点
+    private bool Stage1 = false;//记录玩家到出生复活存档点
+    private bool Stage2 = false;//记录玩家到出生复活存档点
+    private bool Stage3 = false;//记录玩家到到终点状态
+
+
+
 
     [Header("Dash参数")]
-    public float dashTime;//dash时间
+    private float dashTime;//dash时间
     private float dashTimeLeft;//dash剩余时间
     private float lastDash = -10f;//上次data时间点
     public float dashCoolDown;//data冷却时间
     public float dashSpeed;//dash速度
 
 
-    public bool isGround, isJump, isDashing,isDebuff,isBuff;//检测参数
+    public bool isGround, isJump, isDashing,isDebuff,isBuff,isxieshn;//检测参数
     bool jumpPressed;
     int jumpCount;
 
@@ -43,7 +58,12 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        Youxishengli();//游戏结束检测
+        xieshengff();
         DebuffDer();
+        BuffDer();
+        BirthPointFi();
+        BirthPointBox();
         if (Input.GetButtonDown("Jump") && jumpCount > 0)
         {
             jumpPressed = true;
@@ -62,7 +82,9 @@ public class PlayerMove : MonoBehaviour
     private void FixedUpdate()
     {
         isGround = Physics2D.OverlapCircle(groundCheck.position, 0.1f, ground);//检测地面
-        isDebuff = Physics2D.OverlapCircle(groundCheck.position, 0.5f, debuff);//检测负面效果
+        isDebuff = Physics2D.OverlapCircle(debuffCheck.position, 0.5f, debuff);//检测负面效果
+        isBuff = Physics2D.OverlapCircle(buffCheck.position, 0.5f, buff);//检测正面效果
+        isxieshn = Physics2D.OverlapCircle(xieshenCheck.position, 0.5f, xieshneg);
         Dash();
         if (isDashing)
             return;
@@ -84,10 +106,7 @@ public class PlayerMove : MonoBehaviour
             transform.localScale = new Vector3(horizontalMove, 1, 1);
         }
         }
-        if (transform.position.y <= bottomLine.transform.position.y)
-        {
-            transform.position = BirthPoint.position;
-        }
+//
 
 
     }
@@ -101,16 +120,21 @@ public class PlayerMove : MonoBehaviour
         }
         if (jumpPressed && isGround)
         {
+
             isJump = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             jumpCount--;
             jumpPressed = false;
+            dashTime = 0.2f;
         }
         else if (jumpPressed && jumpCount > 0 && isJump)
         {
+            
+
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             jumpCount--;
             jumpPressed = false;
+            dashTime = 0.2f;
         }
     }
     //写动画的位置
@@ -184,6 +208,81 @@ public class PlayerMove : MonoBehaviour
             //isDashing = true;
         }
     }
+    void BuffDer()
+    {
+        if (isBuff)
+        {
+            dashTime = 0.9f;
+        }
+
+    }
+
+
+
+
+    //玩家回去出生地方法
+    void BirthPointFi()
+    {
+        if (transform.position.y <= bottomLine.transform.position.y&& Stage)
+        {
+            transform.position = BirthPoint.position;
+        }
+        if (transform.position.y <= bottomLine.transform.position.y && Stage1)
+        {
+            transform.position = BirthPoint1.position;
+        }
+        if (transform.position.y <= bottomLine.transform.position.y && Stage2)
+        {
+            transform.position = BirthPoint2.position;
+        }
+        if (transform.position.y <= bottomLine.transform.position.y && Stage3)
+        {
+            transform.position = BirthPoint3.position;
+        }
+    }
+    //出生地存档碰撞检测
+    void BirthPointBox(){
+        if (transform.position.x >= BirthPoint1.transform.position.x)
+        {
+            Stage = false;
+            Stage1 = true;
+            
+        }
+        if (transform.position.x >= BirthPoint2.transform.position.x)
+        {
+            Stage = false;
+            Stage1 = false;
+            
+            Stage2 = true;
+        }
+        if (transform.position.x >= BirthPoint3.transform.position.x)
+        {
+            Stage1 = false;
+            Stage = false;
+            Stage2 = false;
+            Stage3 = true;
+            Objectpool.instance.issli = true;
+        }
+    }
+
+    void xieshengff()//检测邪神
+    {
+        if (isxieshn)
+        {
+            Objectpool.instance.isFinish = false;
+        }
+    }
+
+
+    void Youxishengli()//游戏结束
+    {
+        if (Objectpool.instance.issli == true)
+        {
+        SceneManager.LoadScene(4);
+        }
+        
+    }
+
 
 
 }
