@@ -36,7 +36,7 @@ public class ShadowSprite : MonoBehaviour
     void FixedUpdate()
     {
         alpha = alpha * alphaMultiplier;
-        color = new Color(0.5f, 0.5f, 0, alpha);
+        color = new Color(0.0f, 0.0f, 0, alpha);
         thisSprite.color = color;
         if (Time.time >= activeTime + actoveStart)
         {

@@ -12,7 +12,11 @@ public class PlayerMove : MonoBehaviour
     public float speed, jumpForce;
     private float horizontalMove;//获取键盘参数
     public Transform groundCheck;
-    public LayerMask ground;
+    public Transform debuffCheck;
+    public LayerMask ground;//检测（地面）图层
+    public LayerMask debuff;//检测（负面效果平台）
+    GameObject bottomLine;//检测死亡的物品
+    public Transform BirthPoint;
 
     [Header("Dash参数")]
     public float dashTime;//dash时间
@@ -22,7 +26,7 @@ public class PlayerMove : MonoBehaviour
     public float dashSpeed;//dash速度
 
 
-    public bool isGround, isJump, isDashing;//检测参数
+    public bool isGround, isJump, isDashing,isDebuff,isBuff;//检测参数
     bool jumpPressed;
     int jumpCount;
 
@@ -32,18 +36,19 @@ public class PlayerMove : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
+        bottomLine = GameObject.Find("BottomLine");
 
     }
 
 
     void Update()
     {
-
+        DebuffDer();
         if (Input.GetButtonDown("Jump") && jumpCount > 0)
         {
             jumpPressed = true;
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.J))
         {
             if (Time.time >= (lastDash + dashCoolDown))
             {
@@ -56,7 +61,8 @@ public class PlayerMove : MonoBehaviour
 
     private void FixedUpdate()
     {
-        isGround = Physics2D.OverlapCircle(groundCheck.position, 0.1f, ground);
+        isGround = Physics2D.OverlapCircle(groundCheck.position, 0.1f, ground);//检测地面
+        isDebuff = Physics2D.OverlapCircle(groundCheck.position, 0.5f, debuff);//检测负面效果
         Dash();
         if (isDashing)
             return;
@@ -78,7 +84,11 @@ public class PlayerMove : MonoBehaviour
             transform.localScale = new Vector3(horizontalMove, 1, 1);
         }
         }
- 
+        if (transform.position.y <= bottomLine.transform.position.y)
+        {
+            transform.position = BirthPoint.position;
+        }
+
 
     }
 
@@ -158,4 +168,22 @@ public class PlayerMove : MonoBehaviour
           //  anim.SetBool("falling", true);
        // }
     }
+    //玩家吃Debuff
+    void DebuffDer()//执行方法
+    {
+        if (isDebuff)
+        {
+            speed = 2f;
+            jumpForce = 8f;
+            isDashing = false;
+        }
+        else
+        {
+            speed=10f;
+            jumpForce = 13f;
+            //isDashing = true;
+        }
+    }
+
+
 }
